@@ -9,6 +9,7 @@ const {load} = require('./load-module.cjs');
 const {PdfValidationPreview} = load('src/components/pdf-validation/PdfValidationPreview.tsx', {
   '@/lib/pdfValidation': {searchPdfText: async () => ({})},
   '@/lib/pdfFindingLocation': {findingOnPdfPage: () => false, findingPdfPages: () => []},
+  './PdfHighlightedPage': {PdfHighlightedPage: () => null},
 });
 
 const render = props => renderToStaticMarkup(React.createElement(PdfValidationPreview, {

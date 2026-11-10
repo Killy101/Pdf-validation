@@ -21,3 +21,7 @@ build/
 *.cer
 *.pvk
 *.spc
+# Copied from pdfjs-dist at build time
+frontend/public/pdf.worker.min.mjs
+# Office lock files
+~$*

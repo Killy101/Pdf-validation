@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { PdfFinding, PdfTextSearchResult, searchPdfText } from "@/lib/pdfValidation";
 import { findingOnPdfPage, findingPdfPages } from "@/lib/pdfFindingLocation";
+import { PdfHighlightedPage } from "./PdfHighlightedPage";
 
 interface Props {
   active?: boolean;
@@ -55,7 +56,10 @@ export function PdfValidationPreview({
   const [searchError, setSearchError] = useState("");
   const [searchResult, setSearchResult] = useState<PdfTextSearchResult | null>(null);
   const [activeMatch, setActiveMatch] = useState(0);
+  const [highlightView, setHighlightView] = useState(false);
+  const [pageHighlights, setPageHighlights] = useState<number | null>(null);
   const searchAbort = useRef<AbortController | null>(null);
+  const showHighlights = Boolean(highlightView && file && searchResult?.matches.length);
 
   function clearSearch() {
     searchAbort.current?.abort();
@@ -64,6 +68,14 @@ export function PdfValidationPreview({
     setSearchError("");
     setSearchResult(null);
     setActiveMatch(0);
+    setHighlightView(false);
+  }
+
+  useEffect(() => setPageHighlights(null), [currentPage, searchResult]);
+
+  function highlightedPage(extra: string) {
+    return <PdfHighlightedPage file={file!} page={currentPage} query={searchResult!.query} onMatches={setPageHighlights}
+      className={extra} />;
   }
 
   // A different document invalidates earlier results; leaving the screen cancels a running search.
@@ -96,8 +108,7 @@ export function PdfValidationPreview({
       if (found.matches.length) {
         setCurrentPage(found.matches[0].page);
         onPageChange?.(found.matches[0].page);
-        // The built-in viewer cannot be told what to highlight; its own Ctrl+F search can paste this.
-        void navigator.clipboard?.writeText(text).catch(() => undefined);
+        setHighlightView(true);
       }
     } catch (error) {
       if (controller.signal.aborted) return;
@@ -463,9 +474,24 @@ export function PdfValidationPreview({
                   </ul>
                 )}
                 {searchResult.matches.length > 0 && (
-                  <p className="text-[11px] text-slate-500">
-                    To highlight the words on the page, click inside the PDF, press <kbd className="rounded border border-slate-300 px-1 font-mono dark:border-slate-600">Ctrl</kbd>+<kbd className="rounded border border-slate-300 px-1 font-mono dark:border-slate-600">F</kbd> and paste (the search text is copied).
-                  </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div role="radiogroup" aria-label="Preview mode" className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+                      {[{ on: true, label: "Highlighted matches" }, { on: false, label: "PDF viewer" }].map(option => (
+                        <button key={option.label} type="button" role="radio" aria-checked={highlightView === option.on}
+                          onClick={() => setHighlightView(option.on)}
+                          className={`rounded-md px-2 py-0.5 font-semibold cursor-pointer ${highlightView === option.on ? "bg-white text-sky-700 shadow-2xs dark:bg-slate-700 dark:text-sky-300" : "text-slate-500 hover:text-slate-700 dark:text-slate-400"}`}>
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    {showHighlights && pageHighlights !== null && (
+                      <span className="text-[11px] text-slate-500">
+                        {pageHighlights
+                          ? `${pageHighlights} highlighted on page ${currentPage}`
+                          : `No match on page ${currentPage}`}
+                      </span>
+                    )}
+                  </div>
                 )}
                 {searchResult.truncated && (
                   <p className="text-[11px] text-slate-500">Showing the first {searchResult.matches.length} matching pages. Refine the search to narrow it.</p>
@@ -475,7 +501,7 @@ export function PdfValidationPreview({
           </div>
         )}
 
-        {preview ? (
+        {preview && showHighlights ? highlightedPage("min-h-[520px] lg:min-h-[620px] max-h-[80vh] flex-1 w-full") : preview ? (
           <iframe
             key={`${preview}-${currentPage}`}
             title="Uploaded PDF preview"
@@ -489,7 +515,7 @@ export function PdfValidationPreview({
         )}
 
         <p className="text-[11px] text-slate-500">
-          Page numbers follow the uploaded PDF viewer. Use the copied search text to locate wording within a page. Missing source text points to nearby text.
+          Page numbers follow the uploaded PDF viewer. Search results are highlighted on the page. Missing source text points to nearby text.
         </p>
       </section>
 
@@ -633,13 +659,13 @@ export function PdfValidationPreview({
             )}
 
             {/* Modal Iframe Body */}
-            <div className="flex-1 w-full bg-slate-100 dark:bg-slate-950 p-2 sm:p-3">
-              <iframe
+            <div className="flex-1 w-full min-h-0 bg-slate-100 dark:bg-slate-950 p-2 sm:p-3">
+              {showHighlights ? highlightedPage("h-full w-full") : <iframe
                 key={`modal-${preview}-${currentPage}`}
                 title="Expanded uploaded PDF preview"
                 src={`${preview}#page=${currentPage}`}
                 className="h-full w-full rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white"
-              />
+              />}
             </div>
           </div>
         </div>

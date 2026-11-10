@@ -8,6 +8,8 @@ Electron window -> Next.js static UI -> HTTP on 127.0.0.1 + bearer token -> Pyth
 
 The Electron main process (`electron/src`, TypeScript) picks a free port, generates a random token, starts the sidecar, and gives both to the page through a small preload bridge (`window.pdfValidation.backendInfo()`). Closing the app (or a crash) ends the sidecar because the shell holds its stdin open.
 
+The full technical guide (architecture, running, rebuilding the exe and installer, signing, configuration, logs, API, troubleshooting) is [docs/PDF-Validation-Technical-Guide.docx](docs/PDF-Validation-Technical-Guide.docx).
+
 ## Layout
 
 | Path | Contents |
