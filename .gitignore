@@ -1,0 +1,23 @@
+node_modules/
+.next/
+out/
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.tsbuildinfo
+.env
+.env.local
+logs/
+src-tauri/target/
+src-tauri/gen/
+electron/dist/
+electron/resources/
+release/
+build/
+# Signing material must never be committed; certificates are supplied through environment variables.
+*.pfx
+*.p12
+*.cer
+*.pvk
+*.spc

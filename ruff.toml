@@ -1,0 +1,8 @@
+target-version = "py310"
+include = ["backend/**/*.py", "tests/**/*.py"]
+
+[lint]
+# Unused imports and variables, undefined names, syntax errors and likely bugs.
+select = ["F", "E9", "B"]
+# FastAPI declares parameters with Depends()/File()/Form() defaults; zip() truncation is relied on deliberately.
+ignore = ["B008", "B905"]

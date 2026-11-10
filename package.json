@@ -1,0 +1,59 @@
+{
+  "name": "pdf-validation-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop PDF validation against website documents",
+  "author": "PDF Validation",
+  "main": "electron/dist/main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build:electron": "tsc -p electron",
+    "start": "npm --prefix frontend run build && npm run build:electron && electron .",
+    "build:backend": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-backend.ps1",
+    "build:app": "npm --prefix frontend run build && npm run build:electron && electron-builder --win",
+    "build": "npm run build:backend && npm run build:app",
+    "test:backend": ".venv/Scripts/python.exe -m pytest -q",
+    "test:frontend": "npm --prefix frontend test"
+  },
+  "build": {
+    "appId": "com.reflink.pdfvalidation",
+    "productName": "PDF Validation",
+    "files": [
+      "electron/dist/**",
+      "electron/assets/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/out",
+        "to": "frontend"
+      },
+      {
+        "from": "electron/resources/backend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "electron/assets/icon.ico",
+      "signtoolOptions": {
+        "sign": "scripts/sign-hook.cjs",
+        "signingHashAlgorithms": ["sha256"]
+      }
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "output": "release"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "electron": "^33.0.0",
+    "electron-builder": "^26.18.0",
+    "typescript": "^5.4.3"
+  }
+}

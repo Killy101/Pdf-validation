@@ -1,0 +1,10 @@
+{
+  "threshold": 1,
+  "minLines": 8,
+  "minTokens": 70,
+  "reporters": ["console"],
+  "ignore": [
+    "**/node_modules/**", "**/.next/**", "**/out/**", "**/dist/**", "**/build/**", "**/.venv/**",
+    "**/release/**", "**/electron/resources/**", "**/logs/**", "**/*.json", "**/*.md", "**/*.lock"
+  ]
+}
