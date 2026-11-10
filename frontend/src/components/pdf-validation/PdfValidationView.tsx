@@ -57,6 +57,7 @@ import { PdfFindingDiffInspector } from "./PdfFindingDiffInspector";
 import { findingOnPdfPage, findingPageLabel, findingPdfPages } from "@/lib/pdfFindingLocation";
 import { PdfValidationScope } from "./PdfValidationScope";
 import { PdfHistoricalSources, PdfValidationHistory } from "./PdfValidationHistory";
+import uploadBackground from "../../../assets/upload-background.jpg";
 
 const STATUS = {
   match: {
@@ -548,10 +549,14 @@ export function PdfValidationView({active = true}: {active?: boolean}) {
 
   return (
     <div ref={container} className="w-full h-full min-h-0 overflow-y-auto p-3 pt-14 sm:p-4 sm:pt-14 lg:p-5 lg:pt-4 text-slate-800 dark:text-slate-200 font-sans transition-all duration-300">
-      <div className="w-full max-w-none space-y-4 sm:space-y-4.5">
+      <div className="flex min-h-full w-full max-w-none flex-col space-y-4 sm:space-y-4.5">
         {/* View 1: Upload Form & Controls View (Shown initially before validation completes) */}
         {!showResults && (
-          <div className="mx-auto w-full max-w-2xl">
+          <div className="m-auto w-full max-w-2xl">
+            <div aria-hidden="true" className="pointer-events-none fixed inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${uploadBackground.src})` }}>
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-slate-950/60 dark:from-slate-950/70 dark:via-slate-950/50 dark:to-slate-950/80" />
+            </div>
             {/* Main Validation Input Form: Centered Square Box */}
             <form onSubmit={submit} className="relative rounded-3xl border border-slate-200/90 bg-white/95 p-6 sm:p-7 shadow-xl shadow-slate-200/50 backdrop-blur-sm transition-all dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-slate-950/40 space-y-5">
               {/* Box Header: PDF Content URI Validation */}

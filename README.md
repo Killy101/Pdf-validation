@@ -94,7 +94,7 @@ npm run build            # = npm run build:backend, then npm run build:app
 ```
 
 - `build:backend` (`scripts/build-backend.ps1`) builds the validation engine with PyInstaller (`backend/pdf-validation-backend.spec`) into `electron/resources/backend/pdf-validation-backend.exe` (one folder, about 180 MB, includes the Playwright driver; browser pages use the installed Microsoft Edge). The same exe runs the isolated analysis workers (`--worker <module>`). It is then signed (if configured) and smoke-tested with a clean environment by `scripts/test-backend-exe.ps1`.
-- `build:app` builds the Next.js static interface and the Electron shell, and electron-builder writes `release/win-unpacked/` and `release/PDF Validation Setup <version>.exe`. The Next.js interface is never packed into PyInstaller.
+- `build:app` builds the Next.js static interface and the Electron shell, and electron-builder writes `release/win-unpacked/`, `release/PDF Validation Setup <version>.exe` (installer) and `release/PDF Validation <version> Portable.exe` (a single exe that runs without installing; it unpacks to `%TEMP%` on each start, so it opens more slowly). The Next.js interface is never packed into PyInstaller.
 
 Test a built engine on its own (also against live sites):
 
