@@ -27,7 +27,16 @@ jobs:
       - name: Vulture (unused code)
         run: python -m vulture backend/app backend/run_server.py --min-confidence 100
       - name: Tests
-        run: python -m pytest -q -p no:cacheprovider
+        run: python -m pytest -q -p no:cacheprovider -rfE --junitxml=pytest-report.xml
+      - name: Report failing tests
+        if: failure()
+        shell: python
+        run: |
+          import xml.etree.ElementTree as ET
+          for case in ET.parse("pytest-report.xml").iter("testcase"):
+              for problem in list(case.findall("failure")) + list(case.findall("error")):
+                  text = (problem.get("message") or problem.text or "").replace("%", "%25").replace("\r", "").replace("\n", "%0A")[:1500]
+                  print(f"::error title={case.get('classname')}.{case.get('name')}::{text}")
 
   frontend:
     name: Frontend (types, lint, tests, build)
